@@ -663,6 +663,7 @@ body {
   right: 20px;
   background: white;
   border: none;
+  border-radius: 50px;
   font-size: 24px;
   cursor: pointer;
 }
