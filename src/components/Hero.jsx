@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CoverPhoto from '../assets/cover.jpg';
+import TourVideo from '../assets/IVET.mp4';
 // day1
 import d11 from '../assets/travel/day1/1.jpg';
 import d12 from '../assets/travel/day1/2.jpg';
@@ -335,7 +336,7 @@ const Hero = () => {
       <div className="map-section" id="destinations">
         <h2>Video Highlights</h2>
         <video controls className="tour-video">
-          <source src="/src/assets/IVET.mp4" type="video/mp4" />
+          <source src={TourVideo} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
