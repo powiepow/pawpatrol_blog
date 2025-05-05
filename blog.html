@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Educational Tour</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      line-height: 1.6;
+    }
+    .header {
+      background-color: #fff;
+      padding: 10px 40px;
+      border-bottom: 2px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .header.scrolled {
+      transform: translateY(-5px);
+      background-color: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .header .logo {
+      color: #b14d0e;
+      font-size: 24px;
+      font-weight: bold;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .header .logo:hover {
+      transform: scale(1.05);
+      color: #d1600e;
+    }
+    .nav {
+      display: flex;
+      gap: 15px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 600px;
+    }
+    .nav a {
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      position: relative;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background-color: #b14d0e;
+      transition: width 0.3s ease;
+    }
+    .nav a:hover::after {
+      width: 100%;
+    }
+    .nav a:hover {
+      color: #d1600e;
+      transform: translateY(-2px);
+    }
+    .burger-menu {
+      display: none;
+      width: 25px;
+      height: 20px;
+      position: relative;
+      cursor: pointer;
+      margin-right: 5em;
+    }
+    .burger-menu span,
+    .burger-menu span::before,
+    .burger-menu span::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      background-color: #333;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .burger-menu span {
+      top: 8px;
+    }
+    .burger-menu span::before {
+      top: -8px;
+    }
+    .burger-menu span::after {
+      top: 8px;
+    }
+    .burger-menu.active span {
+      background-color: transparent;
+    }
+    .burger-menu.active span::before {
+      transform: rotate(45deg);
+      top: 0;
+      background-color: #b14d0e;
+    }
+    .burger-menu.active span::after {
+      transform: rotate(-45deg);
+      top: 0;
+      background-color: #b14d0e;
+    }
+    .banner {
+      position: relative;
+      height: 400px;
+      overflow: hidden;
+      margin-top: 62px;
+    }
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .banner:hover img {
+      transform: scale(1.03);
+    }
+    .banner-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #fff;
+      animation: bounceIn 1s ease;
+    }
+    .banner-content h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .banner-content p {
+      font-size: 14px;
+      color: #ddd;
+    }
+    .banner-content a {
+      background-color: #b14d0e;
+      color: #fff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+    .banner-content a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      background-color: #d1600e;
+    }
+    .main-content {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .main-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .posts, .sidebar {
+      width: 48%;
+    }
+    .post {
+      background-color: #fff;
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .post img {
+      width: 40%;
+      height: 150px;
+      object-fit: cover;
+      margin-right: 15px;
+      transition: transform 0.3s ease;
+    }
+    .post:hover img {
+      transform: scale(1.05);
+    }
+    .post-content {
+      flex-grow: 1;
+    }
+    .post-content h3 {
+      color: #b14d0e;
+      font-size: 18px;
+      margin: 0 0 5px 0;
+    }
+    .post-content p {
+      color: #666;
+      font-size: 14px;
+      margin: 0 0 10px 0;
+    }
+    .post-content .date {
+      color: #999;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .post-content a {
+      background-color: #b14d0e;
+      color: #fff;
+      padding: 5px 10px;
+      text-decoration: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+    .post-content a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      background-color: #d1600e;
+    }
+    .sidebar h3 {
+      color: #333;
+      font-size: 18px;
+    }
+    .sidebar .itinerary-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .sidebar .itinerary-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .sidebar .itinerary-item h4 {
+      color: #b14d0e;
+      font-size: 16px;
+      margin: 0 0 5px 0;
+    }
+    .sidebar .itinerary-item p {
+      color: #666;
+      font-size: 14px;
+      margin: 0 0 5px 0;
+    }
+    .sidebar .itinerary-item .date {
+      color: #999;
+      font-size: 12px;
+    }
+    .map-section, .gallery, .about {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .map-section.visible, .gallery.visible, .about.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .map-section h2, .gallery h2, .about h2 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #map {
+      height: 400px;
+      background-color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+    #map:hover {
+      transform: scale(1.02);
+    }
+    .destinations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .destination {
+      background-color: #fff;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .destination:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .destination img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .destination:hover img {
+      transform: scale(1.05);
+    }
+    .destination h3 {
+      color: #b14d0e;
+      font-size: 18px;
+      margin: 0 0 10px 0;
+    }
+    .destination p {
+      color: #666;
+      font-size: 14px;
+      margin: 0;
+    }
+    .gallery .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .gallery .gallery-grid img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .gallery .gallery-grid img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .about {
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .about-content {
+      flex: 1;
+    }
+    .about-content p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .about-content a {
+      background-color: #b14d0e;
+      color: #fff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+    .about-content a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      background-color: #d1600e;
+    }
+    .about-image img {
+      width: 100%;
+      max-width: 400px;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .about-image img:hover {
+      transform: scale(1.05);
+    }
+    .footer {
+      background-color: #1a2a3a;
+      color: #b14d0e;
+      text-align: left;
+      padding: 40px 20px;
+      margin-top: 20px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .footer.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .footer .contact {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .footer .contact h3 {
+      font-size: 36px;
+      margin: 0 0 10px 0;
+      font-weight: bold;
+      color: #b14d0e;
+      text-transform: uppercase;
+    }
+    .footer .contact p {
+      font-size: 14px;
+      color: #d4c9a7;
+      margin: 0 0 20px 0;
+      max-width: 400px;
+    }
+    .footer .contact .social-icons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .footer .contact .social-icons img {
+      width: 20px;
+      height: 20px;
+      filter: invert(76%) sepia(14%) saturate(294%) hue-rotate(335deg) brightness(92%) contrast(87%);
+      transition: transform 0.3s ease;
+    }
+    .footer .contact .social-icons img:hover {
+      transform: scale(1.2);
+    }
+    .footer .contact .contact-details {
+      display: flex;
+      gap: 20px;
+    }
+    .footer .contact .contact-details div {
+      background-color: #2a3a4a;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 150px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .footer .contact .contact-details div:hover {
+      transform: translateY(-5px);
+    }
+    .footer .contact .contact-details div img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 10px;
+      filter: invert(76%) sepia(14%) saturate(294%) hue-rotate(335deg) brightness(92%) contrast(87%);
+    }
+    .footer .contact .contact-details div p {
+      margin: 0;
+      font-size: 14px;
+      color: #d4c9a7;
+    }
+    .footer .team {
+      text-align: center;
+      font-size: 15px;
+      color: #b14d0e;
+      margin-top: 20px;
+    }
+    .footer .team a {
+      color: #b14d0e;
+      text-decoration: none;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .footer .team a:hover {
+      color: #d1600e;
+      transform: scale(1.05);
+    }
+    .post-details {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      display: none;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .post-details.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .post-details h2 {
+      color: #b14d0e;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .post-details p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .post-details .images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .post-details .images img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .post-details .images img:hover {
+      transform: scale(1.05);
+    }
+    .post-details .back-btn {
+      background-color: #b14d0e;
+      color: #fff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+    .post-details .back-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      background-color: #d1600e;
+    }
+    .hidden {
+      display: none;
+    }
+
+    /* Animations */
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      60% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+    @keyframes slideIn {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .burger-menu {
+        display: block;
+      }
+      .nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        padding: 10px 0;
+        border-top: 1px solid #e0e0e0;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .nav.active {
+        display: flex;
+        transform: translateX(0);
+        animation: slideIn 0.3s ease forwards;
+      }
+      .nav a {
+        padding: 10px 20px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .main-content {
+        flex-direction: column;
+      }
+      .posts, .sidebar {
+        width: 100%;
+      }
+      .post {
+        flex-direction: column;
+        text-align: center;
+      }
+      .post img {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      .banner-content h3 {
+        font-size: 20px;
+      }
+      .banner-content a {
+        padding: 8px 15px;
+      }
+      .footer .contact {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer .contact h3 {
+        font-size: 28px;
+      }
+      .footer .contact p {
+        max-width: 100%;
+      }
+      .footer .contact .social-icons {
+        justify-content: center;
+      }
+      .footer .contact .contact-details {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .footer .contact .contact-details div {
+        width: 100%;
+      }
+      .about {
+        flex-direction: column;
+        text-align: center;
+      }
+      .about-image img {
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 480px) {
+      .banner {
+        height: 300px;
+      }
+      .banner-content h2 {
+        font-size: 18px;
+      }
+      .banner-content p {
+        font-size: 12px;
+      }
+      .banner-content a {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      .footer .contact h3 {
+        font-size: 24px;
+      }
+      .footer .contact p {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Educational Tour</div>
+    <div class="burger-menu"><span></span></div>
+    <div class="nav">
+      <a href="#home">HOME</a>
+      <a href="#destinations">DESTINATIONS</a>
+      <a href="#itinerary">ITINERARY</a>
+      <a href="#tips">TIPS</a>
+      <a href="#about">ABOUT</a>
+      <a href="#contact">CONTACT</a>
+    </div>
+  </div>
+
+  <div class="banner" id="home">
+    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Nature Scene Banner">
+    <div class="banner-content">
+      <h2>EXPLORE THE WORLD WITH US</h2>
+      <p>Join our educational tours!</p>
+      <a href="tour.html">LEARN MORE</a>
+    </div>
+  </div>
+
+  <div class="main-content" id="main-content">
+    <div class="posts">
+      <div class="post">
+        <img src="https://via.placeholder.com/200x150" alt="Post Image">
+        <div class="post-content">
+          <h3>HISTORICAL SITES</h3>
+          <p>Visit ancient ruins and learn history.</p>
+          <div class="date">19 Apr 2025</div>
+          <a class="read-more" data-post-id="post1">READ MORE</a>
+        </div>
+      </div>
+      <div class="post">
+        <img src="https://via.placeholder.com/200x150" alt="Post Image">
+        <div class="post-content">
+          <h3>SCIENCE ADVENTURES</h3>
+          <p>Explore cutting-edge research facilities.</p>
+          <div class="date">19 Apr 2025</div>
+          <a class="read-more" data-post-id="post2">READ MORE</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar" id="itinerary">
+      <h3>Tour Itinerary</h3>
+      <div class="itinerary-item">
+        <h4>Day 1: Rome, Italy</h4>
+        <p>Visit the Colosseum and Roman Forum, followed by a guided lecture on ancient Roman history.</p>
+        <div class="date">1 Jun 2025</div>
+      </div>
+      <div class="itinerary-item">
+        <h4>Day 2-3: Kyoto, Japan</h4>
+        <p>Explore Kinkaku-ji Temple and attend a workshop on Japanese cultural heritage.</p>
+        <div class="date">3-4 Jun 2025</div>
+      </div>
+      <div class="itinerary-item">
+        <h4>Day 4-5: Boston, USA</h4>
+        <p>Tour MIT research labs and participate in a seminar on modern technology innovations.</p>
+        <div class="date">6-7 Jun 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-details" id="post-details">
+    <div id="post-content"></div>
+    <a class="back-btn" id="back-btn">BACK</a>
+  </div>
+
+  <div class="map-section" id="destinations">
+    <h2>Tour Destinations</h2>
+    <div id="map">Interactive Map Placeholder (Integrate Google Maps or Leaflet here)</div>
+    <div class="destinations-grid">
+      <div class="destination">
+        <img src="https://via.placeholder.com/250x150" alt="Rome">
+        <h3>Rome, Italy</h3>
+        <p>Explore the Colosseum and Roman Forum.</p>
+      </div>
+      <div class="destination">
+        <img src="https://via.placeholder.com/250x150" alt="Kyoto">
+        <h3>Kyoto, Japan</h3>
+        <p>Visit historic temples and cultural sites.</p>
+      </div>
+      <div class="destination">
+        <img src="https://via.placeholder.com/250x150" alt="Boston">
+        <h3>Boston, USA</h3>
+        <p>Tour cutting-edge research labs.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery" id="gallery">
+    <h2>Photo Gallery</h2>
+    <div class="gallery-grid">
+      <img src="https://via.placeholder.com/200x150" alt="Gallery Image">
+      <img src="https://via.placeholder.com/200x150" alt="Gallery Image">
+      <img src="https://via.placeholder.com/200x150" alt="Gallery Image">
+      <img src="https://via.placeholder.com/200x150" alt="Gallery Image">
+    </div>
+  </div>
+
+  <div class="about" id="about">
+    <div class="about-content">
+      <h2>About Us</h2>
+      <p>Welcome to Educational Tour, where learning meets adventure! Founded in 2018 by a group of educators and travel enthusiasts, we’re dedicated to creating transformative travel experiences that educate and inspire. Our mission is to connect curious minds with the world’s most fascinating destinations, offering a unique blend of guided tours, expert-led lectures, and hands-on workshops. From the ancient ruins of Rome to the cutting-edge labs of MIT, our tours span history, science, and culture, designed to spark curiosity and foster a deeper understanding of the world.</p>
+      <p>Our team consists of passionate historians, scientists, and cultural experts who bring each destination to life with their knowledge and enthusiasm. Over the years, we’ve welcomed thousands of travelers from around the globe, earning praise for our thoughtful itineraries and immersive experiences. As one participant shared, “This tour was a perfect blend of education and exploration—I’ve never learned so much while having so much fun!” Whether you’re a student, educator, or lifelong learner, we invite you to join us on a journey that will broaden your horizons and create lasting memories.</p>
+      <a href="#contact">Get in Touch to Explore Our Tours</a>
+    </div>
+    <div class="about-image">
+      <img src="https://via.placeholder.com/400x250?text=Our+Team" alt="Team Photo">
+    </div>
+  </div>
+
+  <div class="footer" id="footer">
+    <div class="contact" id="contact">
+      <div>
+        <h3>Get in Touch</h3>
+        <p>Join our educational tours and explore the world. Contact us for more details!</p>
+        <div class="social-icons">
+          <a href="#"><img src="https://img.icons8.com/ios-filled/50/FFD700/instagram.png" alt="Instagram"></a>
+          <a href="#"><img src="https://img.icons8.com/ios-filled/50/FFD700/linkedin.png" alt="LinkedIn"></a>
+          <a href="#"><img src="https://img.icons8.com/ios-filled/50/FFD700/twitter.png" alt="Twitter"></a>
+        </div>
+      </div>
+      <div class="contact-details">
+        <div>
+          <img src="https://img.icons8.com/ios-filled/50/FFD700/dribbble.png" alt="Dribbble">
+          <p>dribbble.com/tours</p>
+        </div>
+        <div>
+          <img src="https://img.icons8.com/ios-filled/50/FFD700/filled-message.png" alt="Email">
+          <p>info@tours.com</p>
+        </div>
+      </div>
+    </div>
+    <div class="team">
+      <p>Want to lead a tour? <a href="#">Join Our Team</a></p>
+    </div>
+  </div>
+
+  <script>
+    const postsData = {
+      post1: {
+        title: "Historical Sites",
+        date: "19 Apr 2025",
+        fullDescription: "Embark on a journey through time as we explore some of the world's most iconic historical sites in Rome, Italy. Begin with the Colosseum, an ancient amphitheater where gladiators once battled, offering a glimpse into Roman entertainment and engineering marvels. Next, stroll through the Roman Forum, the political, religious, and social hub of ancient Rome, featuring ruins like the Temple of Saturn and the Arch of Titus. Our guided lecture will delve into the Roman Empire's rise and fall, its architectural innovations, and its cultural legacy, including a special focus on the nearby Pantheon, a masterpiece of Roman engineering with its iconic dome. Participants will also visit the Palatine Hill, where Rome’s founding legend began, and enjoy a hands-on workshop on ancient Roman artifacts. This tour is perfect for history enthusiasts eager to immerse themselves in the past and uncover the stories etched in stone.",
+        images: [
+          "https://via.placeholder.com/200x150?text=Colosseum",
+          "https://via.placeholder.com/200x150?text=Roman+Forum",
+          "https://via.placeholder.com/200x150?text=Ancient+Rome",
+          "https://via.placeholder.com/200x150?text=Pantheon",
+          "https://via.placeholder.com/200x150?text=Palatine+Hill",
+          "https://via.placeholder.com/200x150?text=Roman+Artifacts"
+        ]
+      },
+      post2: {
+        title: "Science Adventures",
+        date: "19 Apr 2025",
+        fullDescription: "Join us for an exciting science adventure as we explore cutting-edge research facilities in Boston, USA. Tour the laboratories at MIT, where groundbreaking innovations are born, and participate in a seminar on modern technology advancements. Learn about the latest developments in artificial intelligence, robotics, and renewable energy from leading experts in the field. This tour is designed for science lovers and aspiring innovators eager to see the future of technology in action.",
+        images: [
+          "https://via.placeholder.com/200x150?text=MIT+Lab",
+          "https://via.placeholder.com/200x150?text=Robotics+Lab",
+          "https://via.placeholder.com/200x150?text=Tech+Seminar"
+        ]
+      }
+    };
+
+    const mainContent = document.getElementById('main-content');
+    const postDetails = document.getElementById('post-details');
+    const postContent = document.getElementById('post-content');
+    const mapSection = document.getElementById('destinations');
+    const gallery = document.getElementById('gallery');
+    const about = document.getElementById('about');
+    const footer = document.getElementById('footer');
+    const readMoreButtons = document.querySelectorAll('.read-more');
+    const backBtn = document.getElementById('back-btn');
+
+    readMoreButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const postId = button.getAttribute('data-post-id');
+        const post = postsData[postId];
+
+        postContent.innerHTML = `
+          <h2>${post.title}</h2>
+          <p><strong>Date:</strong> ${post.date}</p>
+          <p>${post.fullDescription}</p>
+          <div class="images">
+            ${post.images.map(img => `<img src="${img}" alt="${post.title} Image">`).join('')}
+          </div>
+        `;
+
+        mainContent.classList.add('hidden');
+        mapSection.classList.add('hidden');
+        gallery.classList.add('hidden');
+        about.classList.add('hidden');
+        footer.classList.add('hidden');
+        postDetails.style.display = 'block';
+        setTimeout(() => postDetails.classList.add('visible'), 10);
+      });
+    });
+
+    backBtn.addEventListener('click', () => {
+      postDetails.classList.remove('visible');
+      setTimeout(() => {
+        postDetails.style.display = 'none';
+        mainContent.classList.remove('hidden');
+        mapSection.classList.remove('hidden');
+        gallery.classList.remove('hidden');
+        about.classList.remove('hidden');
+        footer.classList.remove('hidden');
+      }, 800);
+    });
+
+    const burgerMenu = document.querySelector('.burger-menu');
+    const nav = document.querySelector('.nav');
+    burgerMenu.addEventListener('click', () => {
+      nav.classList.toggle('active');
+      burgerMenu.classList.toggle('active');
+    });
+
+    // Smooth scrolling for nav links
+    document.querySelectorAll('.nav a').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        window.scrollTo({
+          top: targetElement.offsetTop - 60,
+          behavior: 'smooth'
+        });
+        nav.classList.remove('active');
+        burgerMenu.classList.remove('active');
+      });
+    });
+
+    // Intersection Observer for scroll animations
+    const sections = [mainContent, mapSection, gallery, about, footer];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Header scroll effect
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      const header = document.querySelector('.header');
+      if (currentScroll > lastScroll && currentScroll > 100) {
+        header.classList.add('scrolled');
+      } else if (currentScroll < lastScroll) {
+        header.classList.remove('scrolled');
+      }
+      lastScroll = currentScroll;
+    });
+  </script>
+</body>
+</html>
